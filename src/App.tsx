@@ -45,6 +45,33 @@ function App() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    fetch("https://jsonplaceholder.typicode.com/posts", {
+      method: "POST",
+      body: JSON.stringify({
+        formData,
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Server error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((json) => {
+        console.log("Server response:", json);
+        setFormData((prevState) => ({
+          ...prevState,
+          email: "",
+          password: "",
+          remember: false,
+        }));
+      })
+      .catch((error) => {
+        console.error("The request failed:", error);
+      });
   };
 
   return (
@@ -62,7 +89,6 @@ function App() {
                 type={TypeInput.EmailInput}
                 placeholder="Почта"
                 required
-                autoComplete="off"
                 onChange={(e) => handleSetForm(e.target.value, FormField.Email)}
                 value={formData.email}
               ></input>
@@ -72,7 +98,7 @@ function App() {
                   type={typeInput}
                   placeholder="Пароль"
                   required
-                  autoComplete="off"
+                  value={formData.password}
                   onChange={(e) =>
                     handleSetForm(e.target.value, FormField.Password)
                   }
